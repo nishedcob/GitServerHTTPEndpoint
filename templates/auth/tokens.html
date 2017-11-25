@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}API Tokens{% endblock %}
+
+{% block content %}
+  <h2><nav id="title" class=" navbar-custom ">API Tokens</nav></h2>
+
+    {% if exist_tokens %}
+        <h3>Tokens existentes</h3>
+        <table>
+            <thead>
+                {% if show.app_name %}
+                    <th>Nombre de Aplicacion</th>
+                {% endif %}
+                {% if show.dates %}
+                    {% if show.date_create %}
+                        <th>Fecha de Creacion</th>
+                    {% endif %}
+                    {% if show.date_edit %}
+                        <th>Fecha de Ultima Modificacion</th>
+                    {% endif %}
+                    {% if show.date_expire %}
+                        <th>Fecha de Expiracion</th>
+                    {% endif %}
+                {% endif %}
+                {% if show.secret %}
+                    <th>Secreto</th>
+                {% endif %}
+                {% if show.token %}
+                    <th>Token</th>
+                {% endif %}
+                {% if show.edit %}
+                    <th>Editar</th>
+                {% endif %}
+                {% if show.delete %}
+                    <th>Eliminar</th>
+                {% endif %}
+                {% if show.regenerate_secret %}
+                    <th>Regenerar Secreto</th>
+                {% endif %}
+            </thead>
+            <tbody>
+                {% for token in tokens %}
+                    <tr>
+                        {% if show.app_name %}
+                            <td>{{ token.app_name }}</td>
+                        {% endif %}
+                        {% if show.dates %}
+                            {% if show.date_create %}
+                                <td>{{ token.created_date }}</td>
+                            {% endif %}
+                            {% if show.date_edit %}
+                                <td>{{ token.edit_date }}</td>
+                            {% endif %}
+                            {% if show.date_expire %}
+                                <td>
+                                    {% if token.expires %}
+                                        {{ token.expire_date }}
+                                    {% else %}
+                                        No Expira
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        {% endif %}
+                        {% if show.secret %}
+                            <td>{{ token.secret_key }}</td>
+                        {% endif %}
+                        {% if show.token %}
+                            <td>
+                                {% if show.full_token %}
+                                    {{ token.token }}
+                                {% else %}
+                                    <a href="{% url 'auth:token' app_name=token.app_name %}" target="_blank">Ver Token</a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                        {% if show.edit %}
+                            <td><a href="{% url 'auth:edit_token' app_name=token.app_name %}">Editar</a></td>
+                        {% endif %}
+                        {% if show.delete %}
+                            <td><a href="{% url 'auth:delete_token' app_name=token.app_name %}">Eliminar</a></td>
+                        {% endif %}
+                        {% if show.regenerate_secret %}
+                            <td><a href="{% url 'auth:secret_token' app_name=token.app_name %}">Cambiar Secreto</a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+    {% endif %}
+
+    <h3>Crear un nuevo Token</h3>
+    <div class="formularios">
+        <form method="post" id="contactForm">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-success btn-lg" type="submit">Crear token</button>
+        </form>
+    </div>
+{% endblock %}

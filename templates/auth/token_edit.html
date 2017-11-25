@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Token{% endblock %}
+
+{% block content %}
+    <h2><nav id="title" class=" navbar-custom ">Editar Token</nav></h2>
+    <hr>
+    <a href="{% url 'auth:tokens' %}">Ver todos los Tokens</a>
+    <hr>
+    <div class="formularios">
+        <form method="post" id="contactForm">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-success btn-lg" type="submit">Guardar</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+  <h2><nav id="title" class=" navbar-custom ">Login</nav></h2>
+
+<div class="formularios">
+  <form method="post" id="contactForm">
+     {% csrf_token %}
+ {{ form.errors }}
+      <table display="block"; >
+      {% for field in form %}
+          <tr>
+          <td style="padding: 0.8%" >{{ field.label_tag }}</td>
+          <td >{{ field }}</td>
+
+          <td> {{ field.errors }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+
+    <button class="btn btn-success btn-lg"  type="submit">Login</button>
+
+  </form>
+    {% block registration %}<a href="{% url 'auth:registration' %}">No tengo cuenta</a>{% endblock %}
+    </div>
+{% endblock %}

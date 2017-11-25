@@ -15,6 +15,7 @@ django = "*"
 six = "*"
 "psycopg2" = "*"
 pyjwt = "*"
+bcrypt = "*"
 
 
 [requires]

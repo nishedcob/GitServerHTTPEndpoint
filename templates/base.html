@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+{% load static %}
+{% load staticfiles %}
+	<link rel="stylesheet" href="{% static '/css/bs/sbs-fl-ghp/freelancer.css' %}" type = "text/css"/>
+
+	<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+
+	<style type="text/css">
+		html,
+		body {
+		  height:100%
+		}
+	</style>
+    <title>{% block title %}{% endblock %}</title>
+    <script type="application/javascript" src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+</head>
+
+<body >
+
+{% block content %}
+{% endblock %}
+<footer style="position: fixed; bottom: 2%; text-align: center; border-radius: 5px; padding: 5px; width: 100%;">Todos Derechos Reservados &copy; 2017 por Nicholas Spalding Earley-Dolenc</footer>
+</body>
+</html>

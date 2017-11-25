@@ -143,3 +143,5 @@ AUTH_TOKENS_SHOW = {
     'regenerate_secret': True
 }
 
+BARE_GIT_REPOS_ROOT = '/home/git/repositories'
+FULL_GIT_REPOS_ROOT = '/home/git/full'

@@ -5,6 +5,8 @@ from django.http import HttpResponse
 
 import json
 
+from GitServerHTTPEndpoint.settings import AUTH_TOKENS_SHOW
+
 from authApp import forms
 from authApp.models import APIToken
 from authApp.tokens import update_api_token
@@ -29,17 +31,17 @@ class TokensView(PermissionRequiredMixin, View):
             'tokens': tokens,
             'form': form,
             'show': {
-                'app_name': True,
-                'dates': True,
-                'date_create': True,
-                'date_edit': True,
-                'date_expire': True,
-                'secret': False,
-                'token': True,
-                'full_token': False,
-                'edit': True,
-                'delete': True,
-                'regenerate_secret': True
+                'app_name': AUTH_TOKENS_SHOW.get('app_name', True),
+                'dates': AUTH_TOKENS_SHOW.get('dates', True),
+                'date_create': AUTH_TOKENS_SHOW.get('date_create', True),
+                'date_edit': AUTH_TOKENS_SHOW.get('date_edit', True),
+                'date_expire': AUTH_TOKENS_SHOW.get('date_expire', True),
+                'secret': AUTH_TOKENS_SHOW.get('secret', False),
+                'token': AUTH_TOKENS_SHOW.get('token', True),
+                'full_token': AUTH_TOKENS_SHOW.get('full_token', False),
+                'edit': AUTH_TOKENS_SHOW.get('edit', True),
+                'delete': AUTH_TOKENS_SHOW.get('delete', True),
+                'regenerate_secret': AUTH_TOKENS_SHOW.get('regenerate_secret', True)
             }
         }
 

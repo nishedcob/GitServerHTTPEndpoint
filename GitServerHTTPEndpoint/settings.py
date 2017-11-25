@@ -127,3 +127,18 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+AUTH_TOKENS_SHOW = {
+    'app_name': True,
+    'dates': True,
+    'date_create': True,
+    'date_edit': True,
+    'date_expire': True,
+    'secret': False,
+    'token': True,
+    'full_token': False,
+    'edit': True,
+    'delete': True,
+    'regenerate_secret': True
+}
+

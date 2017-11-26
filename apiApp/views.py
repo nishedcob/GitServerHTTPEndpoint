@@ -55,7 +55,7 @@ class NamespaceTokenAuthenticatedView(View):
         except PermissionDenied as pe:
             return self.not_authorized(request=request, reason=pe)
 
-    def get(self, request, namespace, repository):
+    def get(self, request, namespace):
         pass
 
     def success(self):
@@ -127,8 +127,10 @@ class CreateNamespaceView(ManagedNamespaceView):
     def validate_call(self, request, namespace):
         # Test for existence of namespace
         try:
-            if self.manager.exists_full(namespace=namespace)\
-                    and self.manager.exists_bare(namespace=namespace):
+            exists_full = getattr(self.manager, 'exists_full')
+            exists_bare = getattr(self.manager, 'exists_bare')
+            if exists_full(namespace=namespace)\
+                    and exists_bare(namespace=namespace):
                 return self.success()
             else:
                 return None
@@ -138,7 +140,8 @@ class CreateNamespaceView(ManagedNamespaceView):
     def proc(self, request, namespace):
         # Create namespace
         try:
-            self.manager.create(namespace=namespace)
+            create = getattr(self.manager, 'create')
+            create(namespace=namespace)
             return self.success()
         except ValueError as ve:
             raise ve
@@ -153,12 +156,12 @@ class EditNamespaceView(ManagedNamespaceView):
         # Test for existence of old and new namespace
         new_namespace = request.POST.get('new_namespace', None)
         try:
-            if self.manager.exists_full(namespace=namespace)\
-                    and self.manager.exists_bare(namespace=namespace):
+            exists_full = getattr(self.manager, 'exists_full')
+            exists_bare = getattr(self.manager, 'exists_bare')
+            if exists_full(namespace=namespace) and exists_bare(namespace=namespace):
                 if new_namespace is None:
                     return None
-                if not self.manager.exists_full(namespace=new_namespace)\
-                        and not self.manager.exists_bare(namespace=new_namespace):
+                if not exists_full(namespace=new_namespace) and not exists_bare(namespace=new_namespace):
                     return None
                 raise ValueError("%s ya existe" % new_namespace)
             else:
@@ -172,7 +175,8 @@ class EditNamespaceView(ManagedNamespaceView):
         if new_namespace is None:
             return self.success()
         try:
-            self.manager.move(namespace, new_namespace)
+            move = getattr(self.manager, 'move')
+            move(namespace, new_namespace)
             return self.success()
         except ValueError as ve:
             raise ve
@@ -197,8 +201,10 @@ class CreateRepositoryView(ManagedRepositoryView):
             raise ValueError("Error with %s namespace" % namespace)
         # Test for existence of repository
         try:
-            if self.manager.exists_full(namespace=namespace, repository=repository) \
-                    and self.manager.exists_bare(namespace=namespace, repository=repository):
+            exists_full = getattr(self.manager, 'exists_full')
+            exists_bare = getattr(self.manager, 'exists_bare')
+            if exists_full(namespace=namespace, repository=repository) \
+                    and exists_bare(namespace=namespace, repository=repository):
                 return self.success()
             else:
                 return None
@@ -208,7 +214,8 @@ class CreateRepositoryView(ManagedRepositoryView):
     def proc(self, request, namespace, repository):
         # Create repository
         try:
-            self.manager.create(namespace=namespace, repository=repository)
+            create = getattr(self.manager, 'create')
+            create(namespace=namespace, repository=repository)
             return self.success()
         except ValueError as ve:
             raise ve
@@ -231,12 +238,14 @@ class EditRepositoryView(ManagedRepositoryView):
         new_namespace = request.POST.get('new_namespace', None)
         new_repository = request.POST.get('new_repository', None)
         try:
-            if self.manager.exists_full(namespace=namespace, repository=repository) \
-                    and self.manager.exists_bare(namespace=namespace, repository=repository):
+            exists_full = getattr(self.manager, 'exists_full')
+            exists_bare = getattr(self.manager, 'exists_bare')
+            if exists_full(namespace=namespace, repository=repository)\
+                    and exists_bare(namespace=namespace, repository=repository):
                 if new_repository is None:
                     return None
-                if not self.manager.exists_full(namespace=new_namespace, repository=new_repository) \
-                        and not self.manager.exists_bare(namespace=new_namespace, repository=new_repository):
+                if not exists_full(namespace=new_namespace, repository=new_repository)\
+                        and not exists_bare(namespace=new_namespace, repository=new_repository):
                     return None
                 raise ValueError("%s ya existe" % new_repository)
             else:
@@ -259,7 +268,8 @@ class EditRepositoryView(ManagedRepositoryView):
         if new_repository is None:
             return self.success()
         try:
-            self.manager.move(repository, new_repository)
+            move = getattr(self.manager, 'move')
+            move(repository, new_repository)
             return self.success()
         except ValueError as ve:
             raise ve

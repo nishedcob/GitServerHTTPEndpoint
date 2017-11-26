@@ -48,4 +48,9 @@ class NamespaceGitManager(GenericGitManager):
             raise ValueError("%s already exists" % self.build_full_path(namespace=new_namespace))
         if not self.exists_full(namespace=old_namespace):
             raise ValueError("%s does not exist" % self.build_full_path(namespace=old_namespace))
+        if self.exists_bare(namespace=new_namespace):
+            raise ValueError("%s already exists" % self.build_bare_path(namespace=new_namespace))
+        if not self.exists_bare(namespace=old_namespace):
+            raise ValueError("%s does not exist" % self.build_bare_path(namespace=old_namespace))
         os.rename(self.build_full_path(namespace=old_namespace), self.build_full_path(namespace=new_namespace))
+        os.rename(self.build_bare_path(namespace=old_namespace), self.build_bare_path(namespace=new_namespace))

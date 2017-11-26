@@ -246,8 +246,11 @@ class EditRepositoryView(ManagedRepositoryView):
                     and exists_bare(namespace=namespace, repository=repository):
                 if new_repository is None:
                     return None
-                if not exists_full(namespace=new_namespace, repository=new_repository)\
-                        and not exists_bare(namespace=new_namespace, repository=new_repository):
+                try:
+                    if not exists_full(namespace=new_namespace, repository=new_repository)\
+                            and not exists_bare(namespace=new_namespace, repository=new_repository):
+                        return None
+                except ValueError:
                     return None
                 raise ValueError("%s ya existe" % new_repository)
             else:
@@ -259,8 +262,7 @@ class EditRepositoryView(ManagedRepositoryView):
         # Edit Namespace
         namespace_proc = getattr(self.managed_namespace_view, 'proc')
         namespace_mv = namespace_proc(request=request, namespace=namespace)
-        namespace_success = getattr(self.managed_namespace_view, 'success')
-        if namespace_mv != namespace_success():
+        if namespace_mv is None:
             raise ValueError("Error in moving Namespace")
         return None
 
@@ -269,9 +271,12 @@ class EditRepositoryView(ManagedRepositoryView):
         new_repository = request.POST.get('new_repository', None)
         if new_repository is None:
             return self.success()
+        current_namespace = request.POST.get('new_namespace', None)
+        if current_namespace is None:
+            current_namespace = namespace
         try:
             move = getattr(self.manager, 'move')
-            move(repository, new_repository)
+            move(namespace=current_namespace, old_repository=repository, new_repository=new_repository)
             return self.success()
         except ValueError as ve:
             raise ve

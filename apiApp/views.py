@@ -106,6 +106,9 @@ class RepositoryTokenAuthenticatedView(View):
     def get(self, request, namespace, repository):
         pass
 
+    def success(self):
+        return HttpResponse(content='OK', content_type="text/plain", status=200, charset='UTF-8')
+
 
 class ManagedNamespaceView(NamespaceTokenAuthenticatedView):
 
@@ -196,8 +199,7 @@ class CreateRepositoryView(ManagedRepositoryView):
         if namespace_valid is None:
             namespace_proc = getattr(self.managed_namespace_view, 'proc')
             namespace_valid = namespace_proc(request=request, namespace=namespace)
-        namespace_success = getattr(self.managed_namespace_view, 'success')
-        if namespace_valid != namespace_success():
+        if namespace_valid is None:
             raise ValueError("Error with %s namespace" % namespace)
         # Test for existence of repository
         try:

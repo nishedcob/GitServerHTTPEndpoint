@@ -109,14 +109,14 @@ class RepositoryTokenAuthenticatedView(View):
 
 class ManagedNamespaceView(NamespaceTokenAuthenticatedView):
 
-    manager = NamespaceGitManager
+    manager = NamespaceGitManager()
 
 
 class ManagedRepositoryView(RepositoryTokenAuthenticatedView):
 
-    managed_namespace_view = ManagedNamespaceView
-    manager = RepositoryGitManager
-    namespace_manager = manager.namespace_manager
+    managed_namespace_view = ManagedNamespaceView()
+    manager = RepositoryGitManager()
+    namespace_manager = manager.namespace_manager()
 
 
 class CreateNamespaceView(ManagedNamespaceView):
@@ -184,7 +184,7 @@ class EditNamespaceView(ManagedNamespaceView):
 
 class CreateRepositoryView(ManagedRepositoryView):
 
-    managed_namespace_view = CreateNamespaceView
+    managed_namespace_view = CreateNamespaceView()
 
     def post_proc_steps(self):
         return [self.validate_call, self.proc]
@@ -223,7 +223,7 @@ class CreateRepositoryView(ManagedRepositoryView):
 
 class EditRepositoryView(ManagedRepositoryView):
 
-    managed_namespace_view = EditNamespaceView
+    managed_namespace_view = EditNamespaceView()
 
     def post_proc_steps(self):
         return [self.validate_call, self.pre_proc, self.proc]

@@ -74,7 +74,15 @@ class RepositoryGitManager(GenericGitManager):
             raise ValueError("%s already exists" % self.build_full_path(namespace=namespace, repository=new_repository))
         if not self.exists_full(namespace=namespace, repository=old_repository):
             raise ValueError("%s does not exist" % self.build_full_path(namespace=namespace, repository=old_repository))
+        if self.exists_bare(namespace=namespace, repository=new_repository):
+            raise ValueError("%s already exists" % self.build_bare_path(namespace=namespace, repository=new_repository))
+        if not self.exists_bare(namespace=namespace, repository=old_repository):
+            raise ValueError("%s does not exist" % self.build_bare_path(namespace=namespace, repository=old_repository))
         os.rename(
             self.build_full_path(namespace=namespace, repository=old_repository),
             self.build_full_path(namespace=namespace, repository=new_repository)
+        )
+        os.rename(
+            self.build_bare_path(namespace=namespace, repository=old_repository),
+            self.build_bare_path(namespace=namespace, repository=new_repository)
         )

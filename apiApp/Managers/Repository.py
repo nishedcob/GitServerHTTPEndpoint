@@ -9,7 +9,7 @@ from apiApp.Managers.Namespace import NamespaceGitManager
 
 class RepositoryGitManager(GenericGitManager):
 
-    namespace_manager = NamespaceGitManager
+    namespace_manager = NamespaceGitManager()
 
     def build_full_path(self, namespace, repository):
         return "%s/%s/%s" % (self.full_root_path, namespace, repository)
@@ -18,7 +18,8 @@ class RepositoryGitManager(GenericGitManager):
         return "%s/%s/%s.git" % (self.bare_root_path, namespace, repository)
 
     def exists_full(self, namespace, repository):
-        namespace_exists = self.namespace_manager.exists_full(namespace=namespace)
+        namespace_exists_full = getattr(self.namespace_manager, 'exists_full')
+        namespace_exists = namespace_exists_full(namespace=namespace)
         if namespace_exists:
             repository_full_path = pathlib.Path(self.build_full_path(namespace=namespace, repository=repository))
             if repository_full_path.exists():
@@ -31,7 +32,8 @@ class RepositoryGitManager(GenericGitManager):
             raise ValueError("Namespace %s does not exist" % namespace)
 
     def exists_bare(self, namespace, repository):
-        namespace_exists = self.namespace_manager.exists_bare(namespace=namespace)
+        namespace_exists_bare = getattr(self.namespace_manager, 'exists_bare')
+        namespace_exists = namespace_exists_bare(namespace=namespace)
         if namespace_exists:
             repository_bare_path = pathlib.Path(self.build_bare_path(namespace=namespace, repository=repository))
             if repository_bare_path.exists():
@@ -44,7 +46,8 @@ class RepositoryGitManager(GenericGitManager):
             raise ValueError("Namespace %s does not exist" % namespace)
 
     def create(self, namespace, repository):
-        self.namespace_manager.create(namespace=namespace)
+        namespace_create = getattr(self.namespace_manager, 'create')
+        namespace_create(namespace=namespace)
         try:
             create_full = not self.exists_full(namespace=namespace, repository=repository)
             create_bare = not self.exists_bare(namespace=namespace, repository=repository)

@@ -19,5 +19,9 @@ from apiApp import views
 
 appname = 'apiApp'
 urlpatterns = [
-
+    url('ns/create/(?P<namespace>[a-zA-Z0-9])/$', views.CreateNamespaceView.as_view(), 'create_ns'),
+    url('ns/edit/(?P<namespace>[a-zA-Z0-9])/$', views.EditNamespaceView.as_view(), 'edit_ns'),
+    url('repo/create/(?P<namespace>[a-zA-Z0-9])/(?P<repository>)/$', views.CreateRepositoryView.as_view(),
+        'create_repo'),
+    url('repo/edit/(?P<namespace>[a-zA-Z0-9])/(?P<repository>)/$', views.EditRepositoryView.as_view(), 'edit_repo'),
 ]

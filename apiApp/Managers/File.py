@@ -60,6 +60,8 @@ class FileGitManager(GenericGitManager):
                     # Create File
                     full_file_path = self.build_full_path(namespace=namespace, repository=repository,
                                                           file_path=file_path)
+                    full_dir_path = pathlib.Path(full_file_path).parent
+                    os.makedirs(full_dir_path, self.dir_mode)
                     open(full_file_path, 'a').close()
                     # Add Git Commit of empty file if requested
                     if commit:

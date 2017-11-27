@@ -67,14 +67,13 @@ class FileGitManager(GenericGitManager):
                     if commit:
                         if comment is None:
                             comment = "File created/commited by Git Server HTTP Endpoint"
-                        git_commit = subprocess.run(['git', '--work-dir=%s' % full_repo_path,
-                                                     '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
+                        git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
                                                      '"%s"' % comment, full_file_path], stdout=subprocess.PIPE)
                         print(git_commit.stdout)
                 if create_bare:
                     bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
-                    git_pull = subprocess.run(['git', '--work-dir=%s' % bare_repo_path, '--git-dir=%s' % bare_repo_path,
-                                               'pull', full_repo_path], stdout=subprocess.PIPE)
+                    git_pull = subprocess.run(['git', '--git-dir=%s' % bare_repo_path, 'pull', full_repo_path],
+                                              stdout=subprocess.PIPE)
                     print(git_pull.stdout)
             return True
         except ValueError:
@@ -97,13 +96,12 @@ class FileGitManager(GenericGitManager):
                 full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
                 if comment is None:
                     comment = "File Edited/Commit created by Git Server HTTP Endpoint"
-                git_commit = subprocess.run(['git', '--work-dir=%s' % full_repo_path,
-                                             '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
+                git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
                                              '"%s"' % comment, full_file_path], stdout=subprocess.PIPE)
                 print(git_commit.stdout)
                 bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
-                git_pull = subprocess.run(['git', '--work-dir=%s' % bare_repo_path, '--git-dir=%s' % bare_repo_path,
-                                           'pull', full_repo_path], stdout=subprocess.PIPE)
+                git_pull = subprocess.run(['git', '--git-dir=%s' % bare_repo_path, 'pull', full_repo_path],
+                                          stdout=subprocess.PIPE)
                 print(git_pull.stdout)
             return True
         except ValueError:
@@ -127,8 +125,7 @@ class FileGitManager(GenericGitManager):
             full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
             if comment is None:
                 comment = "File Moved/Commit created by Git Server HTTP Endpoint"
-            git_commit = subprocess.run(['git', '--work-dir=%s' % full_repo_path,
-                                         '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
+            git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
                                          '"%s"' % comment, self.build_full_path(namespace=namespace,
                                                                                 repository=repository,
                                                                                 file_path=new_file_path)],

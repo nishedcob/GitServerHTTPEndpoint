@@ -61,14 +61,17 @@ class FileGitManager(GenericGitManager):
                     full_file_path = self.build_full_path(namespace=namespace, repository=repository,
                                                           file_path=file_path)
                     full_dir_path = pathlib.Path(full_file_path).parent
-                    os.makedirs(full_dir_path, self.dir_mode)
+                    os.makedirs(full_dir_path.__str__(), self.dir_mode)
                     open(full_file_path, 'a').close()
                     # Add Git Commit of empty file if requested
                     if commit:
                         if comment is None:
                             comment = "File created/commited by Git Server HTTP Endpoint"
+                        git_add = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'add', file_path],
+                                                 stdout=subprocess.PIPE, cwd=full_repo_path)
+                        print(git_add.stdout)
                         git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
-                                                     '"%s"' % comment, full_file_path], stdout=subprocess.PIPE)
+                                                     '"%s"' % comment], stdout=subprocess.PIPE, cwd=full_repo_path)
                         print(git_commit.stdout)
                 if create_bare:
                     bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
@@ -96,8 +99,11 @@ class FileGitManager(GenericGitManager):
                 full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
                 if comment is None:
                     comment = "File Edited/Commit created by Git Server HTTP Endpoint"
+                git_add = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'add', file_path],
+                                         stdout=subprocess.PIPE, cwd=full_repo_path)
+                print(git_add.stdout)
                 git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
-                                             '"%s"' % comment, full_file_path], stdout=subprocess.PIPE)
+                                             '"%s"' % comment], stdout=subprocess.PIPE, cwd=full_repo_path)
                 print(git_commit.stdout)
                 bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
                 git_pull = subprocess.run(['git', '--git-dir=%s' % bare_repo_path, 'pull', full_repo_path],
@@ -109,27 +115,32 @@ class FileGitManager(GenericGitManager):
         except Exception as e:
             raise e
 
-    def move(self, namespace, repository, old_file_path, new_file_path, overwrite=False, commit=True, comment=None):
+    def move(self, namespace, repository, old_file_path, new_file_path, overwrite=False, git_op=True, commit=True,
+             comment=None):
         # Rename file
         if not overwrite and self.exists_full(namespace=namespace, repository=repository, file_path=new_file_path):
             raise ValueError("%s already exists" % new_file_path)
         if not self.exists_full(namespace=namespace, repository=repository, file_path=old_file_path):
             raise ValueError("%s does not exist" % old_file_path)
-        os.rename(
-            self.build_full_path(namespace=namespace, repository=repository, file_path=old_file_path),
-            self.build_full_path(namespace=namespace, repository=repository, file_path=new_file_path)
-        )
+        full_repo_path_builder = getattr(self.repository_manager, 'build_full_path')
+        full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
+        if git_op:
+            # we want to use git's internal move operator
+            git_mv = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'mv', old_file_path, new_file_path],
+                                    stdout=subprocess.PIPE, cwd=full_repo_path)
+            print(git_mv.stdout)
+        else:
+            # if we don't want to use git's internal move operator, use Operating System's move operation
+            os.rename(
+                self.build_full_path(namespace=namespace, repository=repository, file_path=old_file_path),
+                self.build_full_path(namespace=namespace, repository=repository, file_path=new_file_path)
+            )
         # Commit if requested
         if commit:
-            full_repo_path_builder = getattr(self.repository_manager, 'build_full_path')
-            full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
             if comment is None:
                 comment = "File Moved/Commit created by Git Server HTTP Endpoint"
             git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
-                                         '"%s"' % comment, self.build_full_path(namespace=namespace,
-                                                                                repository=repository,
-                                                                                file_path=new_file_path)],
-                                        stdout=subprocess.PIPE)
+                                         '"%s"' % comment], stdout=subprocess.PIPE, cwd=full_repo_path)
             print(git_commit.stdout)
             bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
             git_pull = subprocess.run(['git', '--work-dir=%s' % bare_repo_path, '--git-dir=%s' % bare_repo_path,

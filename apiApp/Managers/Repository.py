@@ -2,12 +2,22 @@
 import os
 import pathlib
 import subprocess
+import re
 
 from apiApp.Managers.Generic import GenericGitManager
 from apiApp.Managers.Namespace import NamespaceGitManager
 
 
 class RepositoryGitManager(GenericGitManager):
+
+    author_name = "Git Server HTTP Endpoint"
+    author_email = None
+    try:
+        author_email = "git@%s" % re.compile("^b'(.*)\\\\n'$").match(subprocess.run(['hostname'],
+                                                                                    stdout=subprocess.PIPE).stdout
+                                                                     .__str__()).group(1)
+    except IndexError:
+        author_email = "git@Unknown"
 
     namespace_manager = NamespaceGitManager()
 
@@ -58,11 +68,23 @@ class RepositoryGitManager(GenericGitManager):
                     os.mkdir(full_path, self.dir_mode)
                     git_init = subprocess.run(['git', 'init'], cwd=full_path, stdout=subprocess.PIPE)
                     print(git_init.stdout)
+                    git_config_user_name = subprocess.run(['git', 'config', 'user.name', self.author_name],
+                                                          stdout=subprocess.PIPE, cwd=full_path)
+                    print(git_config_user_name.stdout)
+                    git_config_user_email = subprocess.run(['git', 'config', 'user.email', self.author_email],
+                                                           stdout=subprocess.PIPE, cwd=full_path)
+                    print(git_config_user_email.stdout)
                     git_clone = subprocess.run(['git', 'clone', '--bare', full_path, bare_path], stdout=subprocess.PIPE)
                     print(git_clone.stdout)
                 elif create_full:
                     git_clone = subprocess.run(['git', 'clone', bare_path, full_path], stdout=subprocess.PIPE)
                     print(git_clone.stdout)
+                    git_config_user_name = subprocess.run(['git', 'config', 'user.name', self.author_name],
+                                                          stdout=subprocess.PIPE, cwd=full_path)
+                    print(git_config_user_name.stdout)
+                    git_config_user_email = subprocess.run(['git', 'config', 'user.email', self.author_email],
+                                                           stdout=subprocess.PIPE, cwd=full_path)
+                    print(git_config_user_email.stdout)
                 elif create_bare:
                     git_clone = subprocess.run(['git', 'clone', '--bare', full_path, bare_path], stdout=subprocess.PIPE)
                     print(git_clone.stdout)

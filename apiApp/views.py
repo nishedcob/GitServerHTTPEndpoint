@@ -178,7 +178,7 @@ class ManagedFileView(FileTokenAuthenticatedView):
     managed_namespace_view = ManagedNamespaceView()
     manager = FileGitManager()
     repository_manager = manager.repository_manager()
-    namespace_manager = repository_manager.namespace_manager()
+    namespace_manager = manager.namespace_manager()
 
 
 class CreateNamespaceView(ManagedNamespaceView):
@@ -370,8 +370,12 @@ class CreateFileView(ManagedFileView):
 
     def proc(self, request, namespace, repository, file_path):
         # Create file
-        api_token = APIToken.objects.filter(request.POST.get('token'))
-        comment = "File created by %s" % api_token.app_name
+        token = request.POST.get('token', None)
+        name = "Unknown App"
+        if token is not None:
+            api_token = APIToken.objects.get(token=token)
+            name = api_token.app_name
+        comment = "File created by %s" % name
         try:
             create = getattr(self.manager, 'create')
             create(namespace=namespace, repository=repository, file_path=file_path, commit=True, comment=comment)
@@ -436,8 +440,12 @@ class MoveEditFileView(EditFileView):
         current_repository = request.POST.get('new_repository', None)
         if current_repository is None:
             current_repository = repository
-        api_token = APIToken.objects.filter(request.POST.get('token'))
-        comment = "File moved by %s" % api_token.app_name
+        token = request.POST.get('token', None)
+        name = "Unknown App"
+        if token is not None:
+            api_token = APIToken.objects.get(token=token)
+            name = api_token.app_name
+        comment = "File moved by %s" % name
         commit = request.POST.get('commit', True)   # look for commit variable, otherwise assume that we should create a
                                                     # commit
         try:
@@ -456,8 +464,12 @@ class ContentsEditFileView(EditFileView):
 
     def proc(self, request, namespace, repository, file_path):
         contents = request.POST.get('contents', "")  # look for contents variable in POST request or use empty string
-        api_token = APIToken.objects.filter(request.POST.get('token'))
-        comment = "File moved by %s" % api_token.app_name
+        token = request.POST.get('token', None)
+        name = "Unknown App"
+        if token is not None:
+            api_token = APIToken.objects.get(token=token)
+            name = api_token.app_name
+        comment = "File edited by %s" % name
         commit = request.POST.get('commit', True)   # look for commit variable, otherwise assume that we should create a
                                                     # commit
         try:

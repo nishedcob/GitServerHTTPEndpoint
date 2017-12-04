@@ -27,6 +27,12 @@ class GitManager(GenericGitManager):
     def __init__(self, full_repo_path, bare_repo_path, name, email, config_user=True):
         self.full_repo_path = full_repo_path
         self.bare_repo_path = bare_repo_path
+        if self.full_repo_path is not None:
+            path_full = pathlib.Path("%s/.git" % self.full_repo_path)
+            if not path_full.exists():
+                self.init_full()
+            elif not path_full.is_dir():
+                raise ValueError(".git in Full Repo Path is not a directory as expected")
         if config_user and self.full_repo_path is not None:
             self.config_user_full(name=name, email=email)
 
@@ -80,7 +86,7 @@ class GitManager(GenericGitManager):
         git_config_user_name = None
         git_config_user_email = None
         if name is not None:
-            command = ['git', 'config', 'user.name', name]
+            command = ['git', 'config', 'user.name', '"%s"' % name]
             self.print_command(command)
             git_config_user_name = subprocess.run(command, stdout=subprocess.PIPE, cwd=repo_path)
             self.estab_name = True

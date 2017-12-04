@@ -1,10 +1,13 @@
 
+import os
+import pathlib
 import subprocess
 
+from apiApp.Managers.Generic import GenericGitManager
 from GitServerHTTPEndpoint.settings import SYSTEM_DEBUG
 
 
-class GitManager:
+class GitManager(GenericGitManager):
 
     full_repo_path = None
     bare_repo_path = None
@@ -46,10 +49,17 @@ class GitManager:
                     print(word, end=' ')
                 print("")
 
-    def init(self, repo_path):
+    def init(self, repo_path, bare=False):
         if repo_path is None:
             raise ValueError("Repository Path can not be None")
+        init_repo_path = pathlib.Path(repo_path)
+        if not init_repo_path.exists():
+            os.makedirs(repo_path, mode=self.dir_mode)
+        elif not init_repo_path.is_dir():
+            raise ValueError("Repo Path is not a directory")
         command = ['git', 'init']
+        if bare:
+            command.append("--bare")
         self.print_command(command)
         git_init = subprocess.run(command, cwd=repo_path, stdout=subprocess.PIPE)
         return self.format_exit(git_init)
@@ -57,12 +67,12 @@ class GitManager:
     def init_full(self):
         if self.full_repo_path is None:
             raise ValueError("No assigned full repository")
-        return self.init(repo_path=self.full_repo_path)
+        return self.init(repo_path=self.full_repo_path, bare=False)
 
     def init_bare(self):
         if self.bare_repo_path is None:
             raise ValueError("No assigned bare repository")
-        return self.init(repo_path=self.bare_repo_path)
+        return self.init(repo_path=self.bare_repo_path, bare=True)
 
     def config_user(self, repo_path, name=None, email=None):
         if repo_path is None:

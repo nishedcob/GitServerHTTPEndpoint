@@ -69,7 +69,7 @@ class GitManager(GenericGitManager):
             raise ValueError("Repository Path can not be None")
         init_repo_path = pathlib.Path(repo_path)
         if not init_repo_path.exists():
-            os.makedirs(repo_path, mode=self.dir_mode)
+            os.makedirs(repo_path, mode=self.dir_mode, exist_ok=True)
         elif not init_repo_path.is_dir():
             raise ValueError("Repo Path is not a directory")
         command = ['git', 'init']

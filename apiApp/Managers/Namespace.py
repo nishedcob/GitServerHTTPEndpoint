@@ -36,7 +36,7 @@ class NamespaceGitManager(GenericGitManager):
                 os.mkdir(full_path, self.dir_mode)
             bare_path = self.build_bare_path(namespace=namespace)
             if not self.exists_bare(namespace=namespace):
-               os.mkdir(bare_path, self.dir_mode)
+                os.mkdir(bare_path, self.dir_mode)
             return True
         except ValueError:
             return False

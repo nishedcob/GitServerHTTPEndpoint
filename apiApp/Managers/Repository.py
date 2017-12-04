@@ -68,7 +68,12 @@ class RepositoryGitManager(GenericGitManager):
                 gm = GitManager(full_repo_path=full_path, bare_repo_path=bare_path, name=self.author_name,
                                 email=self.author_email, config_user=False)
                 if create_full and create_bare:
-                    os.mkdir(full_path, self.dir_mode)
+                    try:
+                        os.mkdir(full_path, self.dir_mode)
+                    except FileExistsError:
+                        test_path = pathlib.Path(full_path)
+                        if test_path.exists() and not test_path.is_dir():
+                            raise ValueError("%s exists and is not a directory" % full_path)
                     gm.init_bare()
                     gm.config_user_full(name=self.author_name, email=self.author_email)
                     gm.clone_full_to_bare()

@@ -9,7 +9,28 @@ from GitServerHTTPEndpoint.settings import SYSTEM_DEBUG
 
 class GitManager(GenericGitManager):
 
-    full_repo_path = None
+    def __init__(self, full_repo_path, bare_repo_path, name, email, config_user=True):
+        self._full_repo_path = None
+        self.set_full_repo_path(full_repo_path=full_repo_path)
+        self.bare_repo_path = bare_repo_path
+        if config_user and self._full_repo_path is not None:
+            self.config_user_full(name=name, email=email)
+
+    def get_full_repo_path(self):
+        return self._full_repo_path
+
+    def set_full_repo_path(self, full_repo_path):
+        old_full_repo_path = self._full_repo_path
+        self._full_repo_path = full_repo_path
+        if self._full_repo_path is not None:
+            path_full = pathlib.Path("%s/.git" % self._full_repo_path)
+            if not path_full.exists():
+                self.init_full()
+            elif not path_full.is_dir():
+                self._full_repo_path = old_full_repo_path
+                raise ValueError(".git in Full Repo Path is not a directory as expected")
+
+    full_repo_path = property(fget=get_full_repo_path, fset=set_full_repo_path)
     bare_repo_path = None
     estab_name = False
     estab_email = False
@@ -21,20 +42,8 @@ class GitManager(GenericGitManager):
             }
         }
     }
-    debug_git = SYSTEM_DEBUG.get('git', default_debug).get('managers', default_debug['managers'])\
+    debug_git = SYSTEM_DEBUG.get('git', default_debug).get('managers', default_debug['managers']) \
         .get('types', default_debug['managers']['types']).get('git', default_debug['managers']['types']['git'])
-
-    def __init__(self, full_repo_path, bare_repo_path, name, email, config_user=True):
-        self.full_repo_path = full_repo_path
-        self.bare_repo_path = bare_repo_path
-        if self.full_repo_path is not None:
-            path_full = pathlib.Path("%s/.git" % self.full_repo_path)
-            if not path_full.exists():
-                self.init_full()
-            elif not path_full.is_dir():
-                raise ValueError(".git in Full Repo Path is not a directory as expected")
-        if config_user and self.full_repo_path is not None:
-            self.config_user_full(name=name, email=email)
 
     def format_exit(self, proc):
         if proc is None:

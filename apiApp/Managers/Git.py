@@ -53,7 +53,10 @@ class GitManager(GenericGitManager):
             print(proc.stdout)
             print("STDERR:")
             print(proc.stderr)
-            print("EXIT CODE: %d" % proc.returncode)
+            if type(proc.returncode) == int:
+                print("EXIT CODE: %d" % proc.returncode)
+            else:
+                print("EXIT CODE: %s" % proc.returncode)
         return proc.stdout, proc.stderr, proc.returncode
 
     def print_command(self, command_list=None, force_print=False):

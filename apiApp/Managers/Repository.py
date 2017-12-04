@@ -6,6 +6,7 @@ import re
 
 from apiApp.Managers.Generic import GenericGitManager
 from apiApp.Managers.Namespace import NamespaceGitManager
+from apiApp.Managers.Git import GitManager
 
 
 class RepositoryGitManager(GenericGitManager):
@@ -64,30 +65,18 @@ class RepositoryGitManager(GenericGitManager):
             if create_full or create_bare:
                 full_path = self.build_full_path(namespace=namespace, repository=repository)
                 bare_path = self.build_bare_path(namespace=namespace, repository=repository)
+                gm = GitManager(full_repo_path=full_path, bare_repo_path=bare_path, name=self.author_name,
+                                email=self.author_email, config_user=False)
                 if create_full and create_bare:
                     os.mkdir(full_path, self.dir_mode)
-                    git_init = subprocess.run(['git', 'init'], cwd=full_path, stdout=subprocess.PIPE)
-                    print(git_init.stdout)
-                    git_config_user_name = subprocess.run(['git', 'config', 'user.name', self.author_name],
-                                                          stdout=subprocess.PIPE, cwd=full_path)
-                    print(git_config_user_name.stdout)
-                    git_config_user_email = subprocess.run(['git', 'config', 'user.email', self.author_email],
-                                                           stdout=subprocess.PIPE, cwd=full_path)
-                    print(git_config_user_email.stdout)
-                    git_clone = subprocess.run(['git', 'clone', '--bare', full_path, bare_path], stdout=subprocess.PIPE)
-                    print(git_clone.stdout)
+                    gm.init_bare()
+                    gm.config_user_full(name=self.author_name, email=self.author_email)
+                    gm.clone_full_to_bare()
                 elif create_full:
-                    git_clone = subprocess.run(['git', 'clone', bare_path, full_path], stdout=subprocess.PIPE)
-                    print(git_clone.stdout)
-                    git_config_user_name = subprocess.run(['git', 'config', 'user.name', self.author_name],
-                                                          stdout=subprocess.PIPE, cwd=full_path)
-                    print(git_config_user_name.stdout)
-                    git_config_user_email = subprocess.run(['git', 'config', 'user.email', self.author_email],
-                                                           stdout=subprocess.PIPE, cwd=full_path)
-                    print(git_config_user_email.stdout)
+                    gm.clone_bare_to_full()
+                    gm.config_user_full(name=self.author_name, email=self.author_email)
                 elif create_bare:
-                    git_clone = subprocess.run(['git', 'clone', '--bare', full_path, bare_path], stdout=subprocess.PIPE)
-                    print(git_clone.stdout)
+                    gm.clone_full_to_bare()
             return True
         except ValueError:
             return False

@@ -145,3 +145,26 @@ AUTH_TOKENS_SHOW = {
 
 BARE_GIT_REPOS_ROOT = '/home/git/repositories'
 FULL_GIT_REPOS_ROOT = '/home/git/full'
+
+# Define Structure
+SYSTEM_DEBUG = {
+    'git': {
+        'debug': True,
+        'managers': {
+            'debug': None,
+            'types': {
+                'generic': None,
+                'namespace': None,
+                'repository': None,
+                'file': None,
+                'git': None
+            }
+        }
+    }
+}
+
+# Fill SYSTEM_DEBUG
+SYSTEM_DEBUG['git']['managers']['debug'] = SYSTEM_DEBUG['git']['debug'] and True
+for type, value in [('generic', True), ('namespace', True), ('repository', True), ('file', True), ('git', True)]:
+    SYSTEM_DEBUG['git']['managers']['types'][type] = SYSTEM_DEBUG.get('git', {'managers': {'debug': True}})\
+        .get('managers', {'debug': True}).get('debug', True) and value

@@ -6,6 +6,7 @@ import subprocess
 from apiApp.Managers.Generic import GenericGitManager
 # from apiApp.Managers.Namespace import NamespaceGitManager
 from apiApp.Managers.Repository import RepositoryGitManager
+from apiApp.Managers.Git import GitManager
 
 
 class FileGitManager(GenericGitManager):
@@ -56,6 +57,8 @@ class FileGitManager(GenericGitManager):
             if create_full or create_bare:
                 full_repo_path_builder = getattr(self.repository_manager, 'build_full_path')
                 full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
+                gm = GitManager(full_repo_path=full_repo_path, bare_repo_path=None,
+                                name=RepositoryGitManager.author_name, email=RepositoryGitManager.author_email)
                 if create_full:
                     # Create File
                     full_file_path = self.build_full_path(namespace=namespace, repository=repository,
@@ -67,17 +70,15 @@ class FileGitManager(GenericGitManager):
                     if commit:
                         if comment is None:
                             comment = "File created/commited by Git Server HTTP Endpoint"
-                        git_add = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'add', file_path],
-                                                 stdout=subprocess.PIPE, cwd=full_repo_path)
-                        print(git_add.stdout)
-                        git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
-                                                     '"%s"' % comment], stdout=subprocess.PIPE, cwd=full_repo_path)
-                        print(git_commit.stdout)
+                        gm.add_full(file_path=file_path)
+                        gm.commit_full(comment=comment)
                 if create_bare:
                     bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
-                    git_pull = subprocess.run(['git', '--git-dir=%s' % bare_repo_path, 'pull', full_repo_path],
-                                              stdout=subprocess.PIPE)
-                    print(git_pull.stdout)
+                    gm.bare_repo_path = bare_repo_path
+                    # git branch | grep '*' | awk '{print $2}'
+                    full_branch = gm.current_full_branch()
+                    # git push -u $bare_repo_path $(git branch | grep '*' | awk '{print $2}')
+                    gm.push_full_to_bare(full_branch)
             return True
         except ValueError:
             return False
@@ -99,16 +100,14 @@ class FileGitManager(GenericGitManager):
                 full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
                 if comment is None:
                     comment = "File Edited/Commit created by Git Server HTTP Endpoint"
-                git_add = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'add', file_path],
-                                         stdout=subprocess.PIPE, cwd=full_repo_path)
-                print(git_add.stdout)
-                git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
-                                             '"%s"' % comment], stdout=subprocess.PIPE, cwd=full_repo_path)
-                print(git_commit.stdout)
+                gm = GitManager(full_repo_path=full_repo_path, bare_repo_path=None,
+                                name=RepositoryGitManager.author_name, email=RepositoryGitManager.author_email)
+                gm.add_full(file_path=file_path)
+                gm.commit_full(comment=comment)
                 bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
-                git_pull = subprocess.run(['git', '--git-dir=%s' % bare_repo_path, 'pull', full_repo_path],
-                                          stdout=subprocess.PIPE)
-                print(git_pull.stdout)
+                gm.bare_repo_path = bare_repo_path
+                full_branch = gm.current_full_branch()
+                gm.push_full_to_bare(branch=full_branch)
             return True
         except ValueError:
             return False
@@ -125,10 +124,10 @@ class FileGitManager(GenericGitManager):
         full_repo_path_builder = getattr(self.repository_manager, 'build_full_path')
         full_repo_path = full_repo_path_builder(namespace=namespace, repository=repository)
         if git_op:
+            gm = GitManager(full_repo_path=full_repo_path, bare_repo_path=None,
+                            name=RepositoryGitManager.author_name, email=RepositoryGitManager.author_email)
             # we want to use git's internal move operator
-            git_mv = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'mv', old_file_path, new_file_path],
-                                    stdout=subprocess.PIPE, cwd=full_repo_path)
-            print(git_mv.stdout)
+            gm.move_full(old_file_path=old_file_path, new_file_path=new_file_path)
         else:
             # if we don't want to use git's internal move operator, use Operating System's move operation
             os.rename(
@@ -139,10 +138,10 @@ class FileGitManager(GenericGitManager):
         if commit:
             if comment is None:
                 comment = "File Moved/Commit created by Git Server HTTP Endpoint"
-            git_commit = subprocess.run(['git', '--git-dir=%s/.git' % full_repo_path, 'commit', '-m',
-                                         '"%s"' % comment], stdout=subprocess.PIPE, cwd=full_repo_path)
-            print(git_commit.stdout)
+            gm = GitManager(full_repo_path=full_repo_path, bare_repo_path=None,
+                            name=RepositoryGitManager.author_name, email=RepositoryGitManager.author_email)
+            gm.commit_full(comment=comment)
             bare_repo_path = self.build_bare_path(namespace=namespace, repository=repository)
-            git_pull = subprocess.run(['git', '--work-dir=%s' % bare_repo_path, '--git-dir=%s' % bare_repo_path,
-                                       'pull', full_repo_path], stdout=subprocess.PIPE)
-            print(git_pull.stdout)
+            gm.bare_repo_path = bare_repo_path
+            full_branch = gm.current_full_branch()
+            gm.push_full_to_bare(branch=full_branch)

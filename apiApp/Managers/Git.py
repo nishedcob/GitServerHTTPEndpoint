@@ -39,7 +39,7 @@ class GitManager(GenericGitManager):
             print("STDERR:")
             print(proc.stderr)
             print("EXIT CODE: %d" % proc.returncode)
-        return proc.stdout, proc.stdin, proc.returncode
+        return proc.stdout, proc.stderr, proc.returncode
 
     def print_command(self, command_list=None, force_print=False):
         if force_print or self.debug_git:

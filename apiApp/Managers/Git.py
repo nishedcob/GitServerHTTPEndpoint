@@ -2,6 +2,7 @@
 import os
 import pathlib
 import subprocess
+import re
 
 from apiApp.Managers.Generic import GenericGitManager
 from GitServerHTTPEndpoint.settings import SYSTEM_DEBUG
@@ -239,8 +240,8 @@ class GitManager(GenericGitManager):
         command = ['git', 'push']
         if upstream:
             command.append("-u")
-        command.append(branch)
         command.append(dest_repo)
+        command.append(branch)
         self.print_command(command)
         git_push = subprocess.run(command, cwd=src_repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return self.format_exit(git_push)
@@ -263,31 +264,16 @@ class GitManager(GenericGitManager):
         if repo_path is None:
             raise ValueError("No Git Repository Provided")
         # "git branch | grep '*' | awk '{print $2}'"
-        command = ['git', 'branch']
+        command = ["git", "branch", "--list"]
         self.print_command(command)
-        git_branch = subprocess.Popen(command, stdout=subprocess.PIPE, cwd=repo_path)
-        command = ['grep', "'*'"]
-        self.print_command(command)
-        grep = subprocess.Popen(command, stdin=git_branch.stdout, stdout=subprocess.PIPE)
-        git_branch.stdout.close()
-        command = ['awk', "'{print $2}'"]
-        self.print_command(command)
-        awk = subprocess.Popen(['awk', "'{print $2}'"], stdin=grep.stdout, stdout=subprocess.PIPE)
-        grep.stdout.close()
-        if self.debug_git:
-            print("=========================")
-            print("GIT BRANCH")
-            print("=========================")
-            self.format_exit(git_branch)
-            print("=========================")
-            print("GREP")
-            print("=========================")
-            self.format_exit(grep)
-            print("=========================")
-            print("AWK")
-            print("=========================")
-            self.format_exit(awk)
-        return awk.communicate()[0]
+        git_current_branch = subprocess.Popen(command, stdout=subprocess.PIPE, cwd=repo_path)
+        branches = git_current_branch.stdout.read().__str__()
+        current_branch_regex = re.compile('\* ([a-z]*)\\\\n')
+        current_branch = current_branch_regex.findall(branches)
+        if len(current_branch) >= 1:
+            return current_branch[0]
+        else:
+            raise ValueError("Current Branch Not Found")
 
     def current_bare_branch(self):
         if self.bare_repo_path is None:

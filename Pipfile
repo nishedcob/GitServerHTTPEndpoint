@@ -17,6 +17,7 @@ six = "*"
 pyjwt = "*"
 bcrypt = "*"
 ipython = "*"
+requests = "*"
 
 
 [requires]

@@ -371,6 +371,7 @@ class CreateFileView(ManagedFileView):
     def proc(self, request, namespace, repository, file_path):
         # Create file
         token = request.POST.get('token', None)
+        commit = request.POST.get('commit', True)
         name = "Unknown App"
         if token is not None:
             api_token = APIToken.objects.get(token=token)
@@ -378,7 +379,7 @@ class CreateFileView(ManagedFileView):
         comment = "File created by %s" % name
         try:
             create = getattr(self.manager, 'create')
-            create(namespace=namespace, repository=repository, file_path=file_path, commit=True, comment=comment)
+            create(namespace=namespace, repository=repository, file_path=file_path, commit=commit, comment=comment)
             return self.success()
         except ValueError as ve:
             raise ve

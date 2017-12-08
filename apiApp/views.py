@@ -372,6 +372,8 @@ class CreateFileView(ManagedFileView):
         # Create file
         token = request.POST.get('token', None)
         commit = request.POST.get('commit', True)
+        if type(commit) == str:
+            commit = (commit != "False")
         name = "Unknown App"
         if token is not None:
             api_token = APIToken.objects.get(token=token)

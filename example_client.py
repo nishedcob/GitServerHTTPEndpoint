@@ -129,8 +129,9 @@ class FileGitSrvHTTPEpConsumer(DefaultConfigGitSrvHTTPEpConsumer):
         object_path = self.build_object_path(namespace=namespace, repository=repository, file_path=file_path)
         return self.build_config_url(operation=operation, object_path=object_path)
 
-    def create_call(self, namespace, repository, file_path):
+    def create_call(self, namespace, repository, file_path, commit=True):
         payload = self.build_inicial_payload()
+        payload['commit'] = commit
         url = self.build_call_url(operation=self.create_operation, namespace=namespace, repository=repository,
                                   file_path=file_path)
         return self.post_url(url=url, payload=payload)
@@ -153,6 +154,12 @@ class FileGitSrvHTTPEpConsumer(DefaultConfigGitSrvHTTPEpConsumer):
                                   file_path=file_path)
         return self.post_url(url=url, payload=payload)
 
+    def create_and_edit_contents_call(self, namespace, repository, file_path, contents):
+        return [
+            self.create_call(namespace=namespace, repository=repository, file_path=file_path, commit=False),
+            self.edit_contents_call(namespace=namespace, repository=repository, file_path=file_path, contents=contents)
+        ]
+
 
 # to test: set test to True and run "python manage.py -c "import ideApp.git_server_http_endpoint"
 test = False
@@ -163,7 +170,8 @@ if test:
 
     # Example File Creation Call:
     file_consumer = FileGitSrvHTTPEpConsumer()
-    file_create = file_consumer.create_call(namespace=namespace, repository=repository, file_path=file_path)
+    file_create = file_consumer.create_call(namespace=namespace, repository=repository, file_path=file_path,
+                                            commit=False)
 
     print('url: %s' % file_create.request.url)
     print('data: %s' % file_create.request.body)
@@ -174,5 +182,19 @@ if test:
     file_edit = file_consumer.edit_contents_call(namespace=namespace, repository=repository, file_path=file_path,
                                                  contents=contents)
 
+    print('url: %s' % file_edit.request.url)
+    print('data: %s' % file_edit.request.body)
+
+    file_path = 'folder/test3.py'
+
+    file_create_and_edit = file_consumer.create_and_edit_contents_call(namespace=namespace, repository=repository,
+                                                                       file_path=file_path, contents=contents)
+    print("FILE CREATE")
+    file_create = file_create_and_edit[0]
+    print('url: %s' % file_create.request.url)
+    print('data: %s' % file_create.request.body)
+
+    print("FILE EDIT")
+    file_edit = file_create_and_edit[1]
     print('url: %s' % file_edit.request.url)
     print('data: %s' % file_edit.request.body)

@@ -34,11 +34,11 @@ class GitManager(GenericGitManager):
         if len(perm) > 1:
             return self.test_perm(path=path, perm=perm[0]) and self.test_perm(path=path, perm=perm[1:])
         if perm == 'r' or perm == 'R':
-            os_perm = os.R_OK
+            os_perm = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
         elif perm == 'x' or perm == 'X':
-            os_perm = os.X_OK
+            os_perm = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
         elif perm == 'w' or perm == 'W':
-            os_perm = os.W_OK
+            os_perm = stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH
         elif perm == 'a' or perm == 'A':
             if perm == 'a':
                 test_perms = 'rxw'
@@ -51,7 +51,8 @@ class GitManager(GenericGitManager):
             invert_test = True
         else:
             invert_test = False
-        test = os.access(path, os_perm)
+        st = os.stat(path)
+        test = bool(st.st_mode & os_perm)
         return test if not invert_test else not test
 
     '''
@@ -82,12 +83,12 @@ class GitManager(GenericGitManager):
             return self.test_perm(path=path, perm=test_perms)
         else:
             raise ValueError("perm must be one of the following characters: rRxXwWaA")
+        current_mode = stat.S_IMODE(os.lstat(path).st_mode)
         if 'z' >= perm >= 'a':
-            current_mode = stat.S_IMODE(os.lstat(path).st_mode)
             os_perm = ~os_perm
             os.chmod(path, current_mode & os_perm)
         else:
-            os.chmod(path, os_perm)
+            os.chmod(path, current_mode | os_perm)
         return True
 
     def test_and_set_perm(self, path, perm):
@@ -100,9 +101,11 @@ class GitManager(GenericGitManager):
         upgrade_srv_script_dir_path = upgrade_srv_script_path.parent
         if not upgrade_srv_script_dir_path.exists():
             os.makedirs(upgrade_srv_script_dir_path.__str__(), self.dir_mode, exist_ok=True)
+            self.test_and_set_perm(upgrade_srv_script_dir_path.__str__(), self.script_perms)
         else:
             if not upgrade_srv_script_dir_path.is_dir():
                 raise ValueError("Parent directory %s must be a directory" % upgrade_srv_script_dir_path)
+            self.test_and_set_perm(upgrade_srv_script_dir_path.__str__(), self.script_perms)
         if upgrade_srv_script_path.exists():
             if not upgrade_srv_script_path.is_file():
                 raise ValueError("%s is not a file!" % path)

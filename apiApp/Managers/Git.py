@@ -218,6 +218,7 @@ class GitManager(GenericGitManager):
             command.append("--bare")
         self.print_command(command)
         git_init = subprocess.run(command, cwd=repo_path, stdout=subprocess.PIPE)
+        self.update_index()
         return self.format_exit(git_init)
 
     def init_full(self):
@@ -270,6 +271,7 @@ class GitManager(GenericGitManager):
         command.append(dest_repo)
         self.print_command(command)
         git_clone = subprocess.run(command, stdout=subprocess.PIPE)
+        self.update_index()
         return self.format_exit(git_clone)
 
     def clone_bare(self, src_repo, dest_repo):
@@ -324,6 +326,7 @@ class GitManager(GenericGitManager):
         command = ['git', 'commit', '-m', '"%s"' % comment]
         self.print_command(command)
         git_commit = subprocess.run(command, stdout=subprocess.PIPE, cwd=repo_path)
+        self.update_index()
         return self.format_exit(git_commit)
 
     def commit_author(self, repo_path, author_name, author_email, comment=None):
@@ -351,6 +354,7 @@ class GitManager(GenericGitManager):
         command = ['git', 'pull', src_repo, branch]
         self.print_command(command)
         git_pull = subprocess.run(command, cwd=dest_repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.update_index()
         return self.format_exit(git_pull)
 
     def pull_full_to_bare(self, branch):
@@ -381,6 +385,7 @@ class GitManager(GenericGitManager):
         command.append(branch)
         self.print_command(command)
         git_push = subprocess.run(command, cwd=src_repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.update_index()
         return self.format_exit(git_push)
 
     def push_full_to_bare(self, branch):

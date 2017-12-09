@@ -145,6 +145,41 @@ AUTH_TOKENS_SHOW = {
 
 BARE_GIT_REPOS_ROOT = '/home/git/repositories'
 FULL_GIT_REPOS_ROOT = '/home/git/full'
+GIT_PROJECTS_LIST_LOCATION = '/home/git/projects.list'
+
+UPDATE_GIT_SERVER_SCRIPT = '/home/git/bin/git-perms'
+UPDATE_GIT_SERVER_SCRIPT_CONTENTS = """#! /bin/bash
+
+cd $1
+pwd
+chmod -R g+ws .
+chgrp -R git .
+git --bare update-server-info
+cp -v hooks/post-update.sample hooks/post-update
+chmod -v a+x hooks/post-update
+
+"""
+
+UPDATE_ALL_GIT_SERVER_SCRIPT = '/home/git/bin/git-all-perms'
+UPDATE_ALL_GIT_SERVER_SCRIPT_CONTENTS = """#! /bin/bash
+
+find -iname "*.git" -type d -exec %s {} \;
+
+""" % UPDATE_GIT_SERVER_SCRIPT
+
+UPDATE_GIT_SERVER_INDEX_SCRIPT = '/home/git/bin/git-update-index'
+UPDATE_GIT_SERVER_INDEX_SCRIPT_CONTENTS = """#! /bin/bash
+
+find ./ -iname "*.git" -type d | sed 's/^\.\///' | sed 's/$/ Git/' > %s
+
+""" % GIT_PROJECTS_LIST_LOCATION
+
+GIT_DIRS_PERMS_SCRIPT = '/home/git/bin/git-dirs-perms'
+GIT_DIRS_PERMS_SCRIPT_CONTENTS = """#! /bin/bash
+
+find ./ -type d -exec chmod -v o+rx {} \;
+
+"""
 
 # Define Structure
 SYSTEM_DEBUG = {

@@ -1,11 +1,15 @@
 
 import os
+import stat
 import pathlib
 import subprocess
 import re
 
 from apiApp.Managers.Generic import GenericGitManager
-from GitServerHTTPEndpoint.settings import SYSTEM_DEBUG
+from GitServerHTTPEndpoint.settings import SYSTEM_DEBUG, BARE_GIT_REPOS_ROOT, UPDATE_GIT_SERVER_SCRIPT,\
+    UPDATE_GIT_SERVER_SCRIPT_CONTENTS, UPDATE_ALL_GIT_SERVER_SCRIPT, UPDATE_ALL_GIT_SERVER_SCRIPT_CONTENTS,\
+    UPDATE_GIT_SERVER_INDEX_SCRIPT, UPDATE_GIT_SERVER_INDEX_SCRIPT_CONTENTS, GIT_DIRS_PERMS_SCRIPT,\
+    GIT_DIRS_PERMS_SCRIPT_CONTENTS
 
 
 class GitManager(GenericGitManager):
@@ -16,6 +20,66 @@ class GitManager(GenericGitManager):
         self.bare_repo_path = bare_repo_path
         if config_user and self._full_repo_path is not None:
             self.config_user_full(name=name, email=email)
+
+    def install_script(self, path, contents):
+        upgrade_srv_script_path = pathlib.Path(path)
+        upgrade_srv_script_dir_path = upgrade_srv_script_path.parent
+        if not upgrade_srv_script_dir_path.exists():
+            os.makedirs(upgrade_srv_script_dir_path.__str__(), self.dir_mode, exist_ok=True)
+        else:
+            if not upgrade_srv_script_dir_path.is_dir():
+                raise ValueError("Parent directory %s must be a directory" % upgrade_srv_script_dir_path)
+        if upgrade_srv_script_path.exists():
+            if not upgrade_srv_script_path.is_file():
+                raise ValueError("%s is not a file!" % path)
+            if not os.access(path, os.X_OK):
+                # chmod +x update_server_script
+                os.chmod(path, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        else:
+            with open(path, 'a') as script_file:
+                script_file.write(contents)
+                script_file.flush()
+            if not os.access(path, os.X_OK):
+                # chmod +x update_server_script
+                os.chmod(path, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+    def install_update_script(self):
+        return self.install_script(path=UPDATE_GIT_SERVER_SCRIPT, contents=UPDATE_GIT_SERVER_SCRIPT_CONTENTS)
+
+    def install_all_update_script(self):
+        return self.install_script(path=UPDATE_ALL_GIT_SERVER_SCRIPT, contents=UPDATE_ALL_GIT_SERVER_SCRIPT_CONTENTS)
+
+    def install_update_index_script(self):
+        return self.install_script(path=UPDATE_GIT_SERVER_INDEX_SCRIPT,
+                                   contents=UPDATE_GIT_SERVER_INDEX_SCRIPT_CONTENTS)
+
+    def install_dirs_perms_script(self):
+        return self.install_script(path=GIT_DIRS_PERMS_SCRIPT, contents=GIT_DIRS_PERMS_SCRIPT_CONTENTS)
+
+    def update_server_info(self):
+        self.install_update_script()
+        self.install_all_update_script()
+        # find -iname "*.git" -type d -exec ~/bin/git-perms {} \;
+        command = [UPDATE_ALL_GIT_SERVER_SCRIPT]
+        self.print_command(command)
+        find_cmd = subprocess.run(command, cwd=BARE_GIT_REPOS_ROOT, stdout=subprocess.PIPE)
+        return self.format_exit(find_cmd)
+
+    def update_index(self):
+        self.update_server_info()
+        self.install_update_index_script()
+        self.install_dirs_perms_script()
+        # find ./ -iname "*.git" -type d | sed 's/^\.\///' | sed 's/$/ Git/' > ~/projects.list
+        command = [UPDATE_GIT_SERVER_INDEX_SCRIPT]
+        self.print_command(command)
+        find_update_index_cmd = subprocess.run(command, cwd=BARE_GIT_REPOS_ROOT, stdout=subprocess.PIPE)
+        # find ./ -type d -exec chmod -v o+rx {} \;
+        command = [GIT_DIRS_PERMS_SCRIPT]
+        self.print_command(command)
+        find_dirs_perms_cmd = subprocess.run(command, cwd=BARE_GIT_REPOS_ROOT, stdout=subprocess.PIPE)
+        return [
+            self.format_exit(find_update_index_cmd), self.format_exit(find_dirs_perms_cmd)
+        ]
 
     def get_full_repo_path(self):
         return self._full_repo_path

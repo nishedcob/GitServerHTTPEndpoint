@@ -21,6 +21,80 @@ class GitManager(GenericGitManager):
         if config_user and self._full_repo_path is not None:
             self.config_user_full(name=name, email=email)
 
+    '''
+    Test the existence of file permissions on a file:
+        r / R -> Read
+        x / X -> eXecute
+        w / W -> Write
+        a / A -> All
+    Lowercase letters test for the absence of a permission
+    Uppercase letters test for the presence of a permission
+    '''
+    def test_perm(self, path, perm):
+        if len(perm) > 1:
+            return self.test_perm(path=path, perm=perm[0]) and self.test_perm(path=path, perm=perm[1:])
+        if perm == 'r' or perm == 'R':
+            os_perm = os.R_OK
+        elif perm == 'x' or perm == 'X':
+            os_perm = os.X_OK
+        elif perm == 'w' or perm == 'W':
+            os_perm = os.W_OK
+        elif perm == 'a' or perm == 'A':
+            if perm == 'a':
+                test_perms = 'rxw'
+            else:
+                test_perms = 'RXW'
+            return self.test_perm(path=path, perm=test_perms)
+        else:
+            raise ValueError("perm must be one of the following characters: rRxXwWaA")
+        if 'z' >= perm >= 'a':
+            invert_test = True
+        else:
+            invert_test = False
+        test = os.access(path, os_perm)
+        return test if not invert_test else not test
+
+    '''
+    Set file permissions on a file:
+        r / R -> Read
+        x / X -> eXecute
+        w / W -> Write
+        a / A -> All
+    Lowercase letters generate absence of a permission
+    Uppercase letters generate presence of a permission
+    '''
+    def set_perm(self, path, perm):
+        if self.test_perm(path=path, perm=perm):
+            return True
+        if len(perm) > 1:
+            return self.set_perm(path=path, perm=perm[0]) and self.set_perm(path=path, perm=perm[1:])
+        if perm == 'r' or perm == 'R':
+            os_perm = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
+        elif perm == 'x' or perm == 'X':
+            os_perm = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        elif perm == 'w' or perm == 'W':
+            os_perm = stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH
+        elif perm == 'a' or perm == 'A':
+            if perm == 'a':
+                test_perms = 'rxw'
+            else:
+                test_perms = 'RXW'
+            return self.test_perm(path=path, perm=test_perms)
+        else:
+            raise ValueError("perm must be one of the following characters: rRxXwWaA")
+        if 'z' >= perm >= 'a':
+            current_mode = stat.S_IMODE(os.lstat(path).st_mode)
+            os_perm = ~os_perm
+            os.chmod(path, current_mode & os_perm)
+        else:
+            os.chmod(path, os_perm)
+        return True
+
+    def test_and_set_perm(self, path, perm):
+        if not self.test_perm(path=path, perm=perm):
+            return self.set_perm(path=path, perm=perm)
+        return True
+
     def install_script(self, path, contents):
         upgrade_srv_script_path = pathlib.Path(path)
         upgrade_srv_script_dir_path = upgrade_srv_script_path.parent
@@ -32,16 +106,12 @@ class GitManager(GenericGitManager):
         if upgrade_srv_script_path.exists():
             if not upgrade_srv_script_path.is_file():
                 raise ValueError("%s is not a file!" % path)
-            if not os.access(path, os.X_OK):
-                # chmod +x update_server_script
-                os.chmod(path, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+            self.test_and_set_perm(path=path, perm=self.script_perms)
         else:
             with open(path, 'a') as script_file:
                 script_file.write(contents)
                 script_file.flush()
-            if not os.access(path, os.X_OK):
-                # chmod +x update_server_script
-                os.chmod(path, stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+            self.test_and_set_perm(path=path, perm=self.script_perms)
 
     def install_update_script(self):
         return self.install_script(path=UPDATE_GIT_SERVER_SCRIPT, contents=UPDATE_GIT_SERVER_SCRIPT_CONTENTS)

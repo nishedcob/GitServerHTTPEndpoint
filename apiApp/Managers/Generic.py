@@ -11,3 +11,4 @@ class GenericGitManager:
     full_root_path = FULL_GIT_REPOS_ROOT
 
     dir_mode = 0o770
+    script_perms = 'RX'

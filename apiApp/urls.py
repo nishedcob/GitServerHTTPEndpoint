@@ -19,16 +19,16 @@ from apiApp import views
 
 appname = 'apiApp'
 urlpatterns = [
-    url('^ns/create/(?P<namespace>[a-zA-Z0-9]*)/$', views.CreateNamespaceView.as_view(), name='create_ns'),
-    url('^ns/edit/(?P<namespace>[a-zA-Z0-9]*)/$', views.EditNamespaceView.as_view(), name='edit_ns'),
-    url('^repo/create/(?P<namespace>[a-zA-Z0-9]*)/(?P<repository>[a-zA-Z0-9]*)/$', views.CreateRepositoryView.as_view(),
+    url('^ns/create/(?P<namespace>[a-zA-Z0-9-]*)/$', views.CreateNamespaceView.as_view(), name='create_ns'),
+    url('^ns/edit/(?P<namespace>[a-zA-Z0-9-]*)/$', views.EditNamespaceView.as_view(), name='edit_ns'),
+    url('^repo/create/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9]*)/$', views.CreateRepositoryView.as_view(),
         name='create_repo'),
-    url('^repo/edit/(?P<namespace>[a-zA-Z0-9]*)/(?P<repository>[a-zA-Z0-9]*)/$', views.EditRepositoryView.as_view(),
+    url('^repo/edit/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/$', views.EditRepositoryView.as_view(),
         name='edit_repo'),
-    url('^file/create/(?P<namespace>[a-zA-Z0-9]*)/(?P<repository>[a-zA-Z0-9]*)/(?P<file_path>[a-zA-Z0-9/]*\.[a-zA-Z0-9]'
-        '*)$', views.CreateFileView.as_view(), name='create_file'),
-    url('^file/edit/mv/(?P<namespace>[a-zA-Z0-9]*)/(?P<repository>[a-zA-Z0-9]*)/(?P<file_path>[a-zA-Z0-9/]*\.[a-zA-Z0-9'
-        ']*)$', views.MoveEditFileView.as_view(), name='move_file'),
-    url('^file/edit/contents/(?P<namespace>[a-zA-Z0-9]*)/(?P<repository>[a-zA-Z0-9]*)/(?P<file_path>[a-zA-Z0-9/]*\.[a-z'
-        'A-Z0-9]*)$', views.ContentsEditFileView.as_view(), name='edit_file'),
+    url('^file/create/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/(?P<file_path>[a-zA-Z0-9/\.]*\.[a-zA-Z'
+        '0-9]*)$', views.CreateFileView.as_view(), name='create_file'),
+    url('^file/edit/mv/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/(?P<file_path>[a-zA-Z0-9/\.]*\.[a-zA-'
+        'Z0-9]*)$', views.MoveEditFileView.as_view(), name='move_file'),
+    url('^file/edit/contents/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/(?P<file_path>[a-zA-Z0-9/\.]*\.'
+        '[a-zA-Z0-9]*)$', views.ContentsEditFileView.as_view(), name='edit_file'),
 ]

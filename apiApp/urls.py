@@ -21,8 +21,8 @@ appname = 'apiApp'
 urlpatterns = [
     url('^ns/create/(?P<namespace>[a-zA-Z0-9-]*)/$', views.CreateNamespaceView.as_view(), name='create_ns'),
     url('^ns/edit/(?P<namespace>[a-zA-Z0-9-]*)/$', views.EditNamespaceView.as_view(), name='edit_ns'),
-    url('^repo/create/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9]*)/$', views.CreateRepositoryView.as_view(),
-        name='create_repo'),
+    url('^repo/create/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/$',
+        views.CreateRepositoryView.as_view(), name='create_repo'),
     url('^repo/edit/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/$', views.EditRepositoryView.as_view(),
         name='edit_repo'),
     url('^file/create/(?P<namespace>[a-zA-Z0-9-]*)/(?P<repository>[a-zA-Z0-9-]*)/(?P<file_path>[a-zA-Z0-9/\.]*\.[a-zA-Z'

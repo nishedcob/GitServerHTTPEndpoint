@@ -49,7 +49,6 @@
                 <ul id="side-main-menu" class="side-menu list-unstyled">
                     {% block navmenu-main %}
                     <li><a href="{% url 'auth:tokens' %}"> <!--i class="icon-home"></i--><span>Gestión de Tokens</span></a></li>
-                    <li><a href="{% url 'auth:logout' %}"> <!--i class="icon-home"></i--><span>Cerrar Session</span></a></li>
                     {% comment %}
                     <li class="active"><a href="forms.html"><i class="icon-form"></i><span>Forms</span></a></li>
                     <li><a href="charts.html"><i class="icon-presentation"></i><span>Charts</span></a></li>
@@ -60,6 +59,7 @@
                         <div class="badge badge-warning">6 New</div>
                     </a></li>
                     {% endcomment %}
+                    <li><a href="{% url 'auth:logout' %}"> <!--i class="icon-home"></i--><span>Cerrar Session</span></a></li>
                     {% endblock navmenu-main %}
                 </ul>
             </div>

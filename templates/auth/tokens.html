@@ -9,6 +9,18 @@
 {% block navmenu-main %}
     <li class="active"><a href="{% url 'auth:tokens' %}">
         <!--i class="icon-home"></i--><span>Gestión de Tokens</span></a></li>
+    {% if show.edit %}
+        <li><a href="#pages-nav-list" data-toggle="collapse" aria-expanded="false"><!--<i
+                class="icon-interface-windows"></i>--><span>Lista de Tokens</span>
+            <div class="arrow pull-right"><i class="fa fa-angle-down"></i></div>
+        </a>
+            <ul id="pages-nav-list" class="collapse list-unstyled">
+                {% for token in tokens %}
+                    <li><a href="{% url 'auth:edit_token' app_name=token.app_name %}">{{ token.app_name }}</a></li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endif %}
     <li><a href="{% url 'auth:logout' %}"> <!--i class="icon-home"></i--><span>Cerrar Session</span></a></li>
 {% endblock navmenu-main %}
 

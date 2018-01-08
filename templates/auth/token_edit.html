@@ -2,16 +2,59 @@
 
 {% block title %}Editar Token{% endblock %}
 
+{% block breadcrumbs %}
+    <li class="breadcrumb-item"><a href="{% url 'auth:tokens' %}">Administración de API Tokens</a></li>
+    <li class="breadcrumb-item active">{{ app_name }}</li>
+{% endblock %}
+
+{% block navmenu-main %}
+    <li><a href="{% url 'auth:tokens' %}">
+        <!--i class="icon-home"></i--><span>Gestión de Tokens</span></a></li>
+    <li><a href="{% url 'auth:logout' %}"> <!--i class="icon-home"></i--><span>Cerrar Session</span></a></li>
+{% endblock navmenu-main %}
+
 {% block content %}
-    <h2><nav id="title" class=" navbar-custom ">Editar Token</nav></h2>
-    <hr>
-    <a href="{% url 'auth:tokens' %}">Ver todos los Tokens</a>
-    <hr>
-    <div class="formularios">
-        <form method="post" id="contactForm">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button class="btn btn-success btn-lg" type="submit">Guardar</button>
-        </form>
-    </div>
+    <section class="forms">
+        <div class="container-fluid">
+            <!--header>
+                <h1 class="h3 display">Crear un nuevo Token</h1>
+            </header-->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center">
+                            <h2 class="h5 display display">Editar Token: {{ app_name }}</h2>
+                        </div>
+                        <div class="card-body">
+                            <p>Registro de Servicios Externas para crear sus API token.</p>
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ form.non_field_errors }}
+                                {% for field in form %}
+                                    <div class="form-group">
+                                        {{ field.errors }}
+                                        {% if field == form.app_name %}
+                                            <label>Nombre del Servicio:</label>
+                                            <input type="text" placeholder="Nombre del Servicio" name="app_name"
+                                                   class="form-control" value="{{ field.value }}"
+                                                   required>
+                                        {% elif field == form.expires %}
+                                            <input type="checkbox" name="expires" id="id_expires"
+                                                   class="form-control-custom" value="{{ field.value }}">
+                                            <label for="id_expires">Expira</label>
+                                        {% elif field == form.expire_date %}
+                                            <label>Fecha de Expiracion:</label>
+                                            <input type="date" name="expire_date" class="form-control"
+                                                   value="{{ field.value }}">
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                                <button class="btn btn-primary" type="submit">Crear token</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

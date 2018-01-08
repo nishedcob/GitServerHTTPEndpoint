@@ -1,28 +1,90 @@
-{% extends 'base.html' %}
-
-{% block title %}Login{% endblock %}
-
-{% block content %}
-  <h2><nav id="title" class=" navbar-custom ">Login</nav></h2>
-
-<div class="formularios">
-  <form method="post" id="contactForm">
-     {% csrf_token %}
- {{ form.errors }}
-      <table display="block"; >
-      {% for field in form %}
-          <tr>
-          <td style="padding: 0.8%" >{{ field.label_tag }}</td>
-          <td >{{ field }}</td>
-
-          <td> {{ field.errors }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-
-    <button class="btn btn-success btn-lg"  type="submit">Login</button>
-
-  </form>
-    {% block registration %}<a href="{% url 'auth:registration' %}">No tengo cuenta</a>{% endblock %}
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    {% load staticfiles %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Bootstrap Dashboard by Bootstrapious.com</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <!-- Bootstrap CSS-->
+    <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+    <!-- Font Awesome CSS-->
+    <link rel="stylesheet" href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}">
+    <!-- Custom icon font-->
+    <link rel="stylesheet" href="{% static 'css/fontastic.css' %}">
+    <!-- Google fonts - Roboto -->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <!-- jQuery Circle-->
+    <link rel="stylesheet" href="{% static 'css/grasp_mobile_progress_circle-1.0.0.min.css' %}">
+    <!-- Custom Scrollbar-->
+    <link rel="stylesheet" href="{% static 'vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css' %}">
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="{% static 'css/style.default.css' %}" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="favicon.png">
+    <!-- Tweaks for older IEs--><!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+  </head>
+  <body>
+    <div class="page login-page">
+      <div class="container">
+        <div class="form-outer text-center d-flex align-items-center">
+          <div class="form-inner">
+            <div class="logo text-uppercase"><span>GitServerHTTPEndpoint</span><strong class="text-primary">Administración Dashboard</strong></div>
+            <p>Gestion de Tokens de Autenticación para Servicios Externas.</p>
+            <form id="login-form" method="post">
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              {% for field in form %}
+                <div class="form-group">
+                {{ field.errors }}
+                {% if field == form.username %}
+                  <label for="login-username" class="label-custom">Nombre de Usuario</label>
+                  <input id="login-username" type="text" name="username" required>
+                {% elif field == form.password %}
+                  <label for="login-password" class="label-custom">Clave</label>
+                  <input id="login-password" type="password" name="password" required="">
+                {% endif %}
+                </div>
+              {% endfor %}
+              <button id="login" href="" class="btn btn-primary">Login</button>
+              <!-- This should be submit button but I replaced it with <a> for demo purposes-->
+            </form>
+          </div>
+          <div class="copyrights text-center">
+            <p>Todos Derechos Reservados &copy; 2017-2018 por Nicholas Spalding Earley-Dolenc</p>
+            <p>Design by <a href="https://bootstrapious.com" class="external">Bootstrapious</a></p>
+            <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
+          </div>
+        </div>
+      </div>
     </div>
-{% endblock %}
+    <!-- Javascript files-->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"> </script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery.cookie/jquery.cookie.js' %}"> </script>
+    <script src="{% static 'js/grasp_mobile_progress_circle-1.0.0.min.js' %}"></script>
+    <script src="{% static 'vendor/jquery-validation/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+    <script src="{% static 'js/front.js' %}"></script>
+    {% comment %}
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID.-->
+    <!---->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>
+    {% endcomment %}
+  </body>
+</html>

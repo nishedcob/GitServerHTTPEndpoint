@@ -18,7 +18,7 @@ from django.contrib.auth import views as auth_views
 from authApp import views
 
 login_template = 'auth/login'
-login_template = login_template + ".noreg"
+#login_template = login_template + ".noreg"
 login_template = login_template + ".html"
 
 appname = "authApp"

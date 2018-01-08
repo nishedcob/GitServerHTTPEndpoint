@@ -3,8 +3,14 @@
 {% block title %}API Tokens{% endblock %}
 
 {% block breadcrumbs %}
-    <li class="breadcrumb-item active">API Tokens</li>
+    <li class="breadcrumb-item active">Administración de API Tokens</li>
 {% endblock %}
+
+{% block navmenu-main %}
+    <li class="active"><a href="{% url 'auth:tokens' %}">
+        <!--i class="icon-home"></i--><span>Gestión de Tokens</span></a></li>
+    <li><a href="{% url 'auth:logout' %}"> <!--i class="icon-home"></i--><span>Cerrar Session</span></a></li>
+{% endblock navmenu-main %}
 
 {% block content %}
     {% if exist_tokens %}
@@ -135,10 +141,12 @@
                                         {{ field.errors }}
                                         {% if field == form.app_name %}
                                             <label>Nombre del Servicio:</label>
-                                            <input type="text" placeholder="Nombre del Servicio" name="app_name" class="form-control"
+                                            <input type="text" placeholder="Nombre del Servicio" name="app_name"
+                                                   class="form-control"
                                                    required>
                                         {% elif field == form.expires %}
-                                            <input type="checkbox" name="expires" id="id_expires" class="form-control-custom">
+                                            <input type="checkbox" name="expires" id="id_expires"
+                                                   class="form-control-custom">
                                             <label for="id_expires">Expira</label>
                                         {% elif field == form.expire_date %}
                                             <label>Fecha de Expiracion:</label>

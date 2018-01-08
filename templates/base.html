@@ -37,16 +37,20 @@
     <nav class="side-navbar">
         <div class="side-navbar-wrapper">
             <div class="sidenav-header d-flex align-items-center justify-content-center">
-                <div class="sidenav-header-inner text-center"><img src="{% static 'img/avatar-1.jpg' %}" alt="person"
-                                                                   class="img-fluid rounded-circle">
-                    <h2 class="h5 text-uppercase">Anderson Hardy</h2><span class="text-uppercase">Web Developer</span>
+                <div class="sidenav-header-inner text-center">{% comment %}<img src="{% static 'img/avatar-1.jpg' %}" alt="person"
+                                                                   class="img-fluid rounded-circle">{% endcomment %}
+                    <h2 class="h5 text-uppercase">GitServerHTTPEndpoint</h2><span class="text-uppercase">UTPL</span>
                 </div>
                 <div class="sidenav-header-logo"><a href="index.html" class="brand-small text-center">
                     <strong>B</strong><strong class="text-primary">D</strong></a></div>
             </div>
+            {% block navmenu %}
             <div class="main-menu">
                 <ul id="side-main-menu" class="side-menu list-unstyled">
-                    <li><a href="index.html"> <i class="icon-home"></i><span>Home</span></a></li>
+                    {% block navmenu-main %}
+                    <li><a href="{% url 'auth:tokens' %}"> <!--i class="icon-home"></i--><span>Gestión de Tokens</span></a></li>
+                    <li><a href="{% url 'auth:logout' %}"> <!--i class="icon-home"></i--><span>Cerrar Session</span></a></li>
+                    {% comment %}
                     <li class="active"><a href="forms.html"><i class="icon-form"></i><span>Forms</span></a></li>
                     <li><a href="charts.html"><i class="icon-presentation"></i><span>Charts</span></a></li>
                     <li><a href="tables.html"> <i class="icon-grid"> </i><span>Tables  </span></a></li>
@@ -55,8 +59,11 @@
                     <li><a href="#"> <i class="icon-mail"></i><span>Demo</span>
                         <div class="badge badge-warning">6 New</div>
                     </a></li>
+                    {% endcomment %}
+                    {% endblock navmenu-main %}
                 </ul>
             </div>
+            {% comment %}
             <div class="admin-menu">
                 <ul id="side-admin-menu" class="side-menu list-unstyled">
                     <li><a href="#pages-nav-list" data-toggle="collapse" aria-expanded="false"><i
@@ -78,6 +85,8 @@
                     <li><a href=""> <i class="icon-picture"> </i><span>Demo</span></a></li>
                 </ul>
             </div>
+            {% endcomment %}
+            {% endblock navmenu %}
         </div>
     </nav>
 {% endblock navbar %}
@@ -88,7 +97,7 @@
                 {% block breadcrumbs %}
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
                     <li class="breadcrumb-item active">Forms</li>
-                {% endblock %}
+                {% endblock breadcrumbs %}
             </ul>
         </div>
     </div>
@@ -710,7 +719,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <p>Todos Derechos Reservados &copy; 2017 por Nicholas Spalding Earley-Dolenc</p>
+                    <p>Todos Derechos Reservados &copy; 2017-2018 por Nicholas Spalding Earley-Dolenc</p>
                 </div>
                 <div class="col-sm-6 text-right">
                     <p>Design by <a href="https://bootstrapious.com" class="external">Bootstrapious</a></p>

@@ -162,7 +162,8 @@
                                             <label for="id_expires">Expira</label>
                                         {% elif field == form.expire_date %}
                                             <label>Fecha de Expiracion:</label>
-                                            <input type="date" name="expire_date" class="form-control">
+                                            <p>Formato: <em>mm/dd/yyyy hh:mm</em></p>
+                                            <input type="text" name="expire_date" placeholder="mm/dd/yyyy hh:mm" class="form-control">
                                         {% endif %}
                                     </div>
                                 {% endfor %}

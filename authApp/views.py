@@ -25,6 +25,8 @@ class TokensView(PermissionRequiredMixin, View):
         if form is None:
             raise ValueError("Form can't be None")
         tokens = list(APIToken.objects.all())
+        for token in tokens:
+            print("%s : %s" % (token.expires, token.expire_date.__str__()))
         exist_tokens = tokens is not None and len(tokens) > 0
         return {
             'exist_tokens': exist_tokens,
@@ -54,6 +56,9 @@ class TokensView(PermissionRequiredMixin, View):
         form_response = self.form(request.POST)
         if form_response.is_valid():
             api_token = form_response.save(commit=False)
+            print(api_token.expire_date)
+            api_token.expire_date = api_token.expire_date.__str__()
+            print(api_token.expire_date)
             update_api_token(api_token=api_token, regen_secret_key=True)
             # Update a second time to correct timestamp issue
             update_api_token(api_token=api_token, regen_secret_key=False)
@@ -127,6 +132,8 @@ class EditTokenView(PermissionRequiredMixin, View):
         context = {
             'form': form
         }
+        print(form)
+        #print(form['expire_date'].value)
         if app_name is not None:
             context['app_name'] = app_name
         return context
@@ -143,6 +150,9 @@ class EditTokenView(PermissionRequiredMixin, View):
         form_response.instance = old_token
         if form_response.is_valid():
             api_token = form_response.save(commit=False)
+            print(api_token.expire_date)
+            api_token.expire_date = api_token.expire_date.__str__()
+            print(api_token.expire_date)
             update_api_token(api_token=api_token, regen_secret_key=False)
         else:
             context = self.build_context(form=form_response)

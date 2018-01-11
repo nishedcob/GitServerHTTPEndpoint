@@ -40,16 +40,18 @@
                                                    required>
                                         {% elif field == form.expires %}
                                             <input type="checkbox" name="expires" id="id_expires"
-                                                   class="form-control-custom" value="{{ field.value }}">
-                                            <label for="id_expires">Expira</label>
+                                                   class="form-control-custom" {% if field.value %}checked{% endif %}>
+                                            <label for="id_expires">Expira</label>`
                                         {% elif field == form.expire_date %}
                                             <label>Fecha de Expiracion:</label>
+                                            <p>Formato: <em>mm/dd/yyyy hh:mm</em></p>
                                             {% if field.value is not None %}
-                                                <input type="date" name="expire_date" class="form-control"
-                                                       value="{{ field.value }}">
+                                                <!--input type="text" name="expire_date" placeholder="mm/dd/yyyy hh:mm"
+                                                       class="form-control" value="{{ field.value }}"-->
+                                                {{ field }}
                                             {% else %}
-                                                <input type="date" name="expire_date" class="form-control"
-                                                       value="">
+                                                <input type="text" name="expire_date" placeholder="mm/dd/yyyy hh:mm"
+                                                       class="form-control" value="">
                                             {% endif %}
                                         {% endif %}
                                     </div>

@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
-PORT_NUMBER=8020
-command -v pipenv > /dev/null 2>&1
+PORT_NUMBER="8020"
+PIPENV_COMMAND="pipenv"
+ENV_COMMAND="/usr/bin/env"
+DJANGO_COMMAND="python manage.py runserver $PORT_NUMBER"
+command -v $PIPENV_COMMAND
 if [ $? -eq 0 ]; then
-    #echo "pipenv detected";
-    /usr/bin/env pipenv --venv
+    PIPENV_COMMAND="$ENV_COMMAND $PIPENV_COMMAND"
+    $PIPENV_COMMAND --venv
     if [ ! $? -eq 0 ]; then
-        /usr/bin/env pipenv --three
+        $PIPENV_COMMAND --three
     fi
-    /usr/bin/env pipenv install
-    /usr/bin/env pipenv run python manage.py runserver $PORT_NUMBER
+    $PIPENV_COMMAND install
+    $PIPENV_COMMAND run $DJANGO_COMMAND
 else
     source activate.sh
-    python manage.py runserver $PORT_NUMBER
+    $DJANGO_COMMAND
     deactivate
 fi

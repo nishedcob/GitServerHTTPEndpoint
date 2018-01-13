@@ -1,1 +1,1 @@
-/home/nyx/GitServerHTTPEndpoint/3rd_party/bootstrap-dashboard-template/js/front.js
+../../3rd_party/bootstrap-dashboard-template/js/front.js

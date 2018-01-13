@@ -11,7 +11,7 @@ verify_ssl = true
 
 [packages]
 
-django = "*"
+django = "==1.11"
 six = "*"
 "psycopg2" = "*"
 pyjwt = "*"

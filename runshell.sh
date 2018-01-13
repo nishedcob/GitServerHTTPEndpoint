@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-PIPENV_COMMAND="pipenv2"
+PIPENV_COMMAND="pipenv"
 ENV_COMMAND="/usr/bin/env"
 DJANGO_COMMAND="python manage.py shell"
 command -v $PIPENV_COMMAND

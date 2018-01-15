@@ -12,12 +12,7 @@ def validate_api_token(client_api_token=None):
     if stored_api_token is None:
         raise ValueError('No Stored API Token for token \'%s\'' % client_api_token)
     api_token_values = decode_api_token(api_token=stored_api_token, token=client_api_token)
-    return stored_api_token.created_date.__str__() == api_token_values.get('created_date') and \
-        stored_api_token.edit_date_in_token == api_token_values.get('edit_date') and \
-        (
-            not stored_api_token.expires or
-            stored_api_token.expire_date.__str__() == api_token_values.get('expires')
-        ) and stored_api_token.app_name == api_token_values.get('app_name')
+    return stored_api_token.app_name == api_token_values.get('app_name')
 
 
 def decode_api_token(api_token=None, token=None):

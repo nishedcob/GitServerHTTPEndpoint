@@ -131,6 +131,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+STATIC_ROOT = "/static/service/uwsgi/githttpserverendpoint/static"
+
 AUTH_TOKENS_SHOW = {
     'app_name': True,
     'dates': True,

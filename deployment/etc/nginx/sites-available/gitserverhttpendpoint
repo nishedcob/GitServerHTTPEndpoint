@@ -1,0 +1,13 @@
+
+server {
+	listen 8020;
+	listen [::]:8020;
+	server_name _;
+	location /static/ {
+		root /static/service/uwsgi/githttpserverendpoint;
+	}
+	location / {
+		proxy_pass http://127.0.0.1:8021;
+	}
+}
+

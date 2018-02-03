@@ -2,12 +2,14 @@
 Description=uWSGI Emperor service
 
 [Service]
-ExecStartPre=/bin/bash -c 'mkdir -p /run/uwsgi; chown nyx:root /run/uwsgi'
+#ExecStartPre=/bin/bash -c 'mkdir -p /run/uwsgi; chown uwsgi:uwsgi /run/uwsgi'
 ExecStart=/usr/local/bin/uwsgi --emperor /etc/uwsgi/sites
 Restart=always
 KillSignal=SIGQUIT
 Type=notify
 NotifyAccess=all
+User=uwsgi
+Group=uwsgi
 
 [Install]
 WantedBy=multi-user.target

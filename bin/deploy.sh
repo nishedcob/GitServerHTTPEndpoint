@@ -1,0 +1,19 @@
+#! /bin/bash
+
+SYSTEMCTL=/bin/systemctl
+SUDO=/usr/bin/sudo
+SERVICE=uwsgi
+BASE_PATH=/home/git/GitServerHTTPEndpoint
+PYTHON=env/bin/python
+MANAGE=manage.py
+STATIC_COMMAND="collectstatic --no-input"
+MIGRATE_COMMAND="migrate"
+STAT=status
+RESET=restart
+
+$BASE_PATH/$PYTHON $BASE_PATH/$MANAGE $STATIC_COMMAND
+$BASE_PATH/$PYTHON $BASE_PATH/$MANAGE $MIGRATE_COMMAND
+$SYSTEMCTL $STAT $SERVICE
+$SUDO $SYSTEMCTL $RESET $SERVICE
+$SYSTEMCTL $STAT $SERVICE
+

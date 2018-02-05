@@ -1,0 +1,35 @@
+#!/bin/bash
+#
+## Originally:
+## #!/bin/sh
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-receive".
+
+BASE_PATH="/home/git/GitServerHTTPEndpoint"
+GIT_DIR_PATH="$BASE_PATH/.git"
+DEPLOY_SCRIPT_PATH="$BASE_PATH/bin/deploy.sh"
+CHECKOUT="checkout"
+SERVICE_NAME="GitServerHTTPEndpoint"
+DEPLOYMENT_BRANCH="deployment"
+GIT="/usr/bin/git"
+UPDATE_INFO="update-server-info"
+WORK_TREE="--work-tree=$BASE_PATH"
+GIT_DIR="--git-dir=$GIT_DIR_PATH"
+
+$GIT $UPDATE_INFO
+echo "Directorio actual: " `pwd`
+echo "Actualizando el servicio $SERVICE_NAME..."
+while read oldrev newrev ref
+do
+    if [[ $ref =~ ".*/$DEPLOYMENT_BRANCH$" ]];
+    then
+        echo "Referencia $DEPLOYMENT_BRANCH recibido.  Desplegando rama $DEPLOYMENT_BRANCH..."
+        echo "Ref: $ref"
+        $GIT $WORK_TREE $GIT_DIR $CHECKOUT && $DEPLOY_SCRIPT_PATH
+    else
+        echo "Ref $ref recibido exitosamente.  No voy a hacer nada: solo se deplega la rama $DEPLOYMENT_BRANCH en este servidor."
+    fi
+done
+echo "Servicio $SERVICE_NAME actualizado..."

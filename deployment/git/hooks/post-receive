@@ -16,7 +16,8 @@ DEPLOYMENT_BRANCH="deployment"
 GIT="/usr/bin/git"
 UPDATE_INFO="update-server-info"
 WORK_TREE="--work-tree=$BASE_PATH"
-GIT_DIR="--git-dir=$GIT_DIR_PATH"
+#GIT_DIR="--git-dir=$GIT_DIR_PATH"
+GIT_DIR="" # No es necesario utilizar eso con repositorios completos, solo en el caso de repositorios bare
 
 $GIT $UPDATE_INFO
 echo "Directorio actual: " `pwd`

@@ -14,9 +14,9 @@ CHECKOUT="checkout"
 SERVICE_NAME="GitServerHTTPEndpoint"
 DEPLOYMENT_BRANCH="deployment"
 GIT="/usr/bin/git"
-UPDATE_INFO="update-server-info"
 WORK_TREE="--work-tree=$BASE_PATH"
 GIT_DIR="--git-dir=$GIT_DIR_PATH"
+UPDATE_INFO="$WORK_TREE $GIT_DIR update-server-info"
 #GIT_DIR="" # No es necesario utilizar eso con repositorios completos, solo en el caso de repositorios bare
 
 $GIT $UPDATE_INFO

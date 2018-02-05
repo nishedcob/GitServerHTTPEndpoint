@@ -24,7 +24,7 @@ echo "Directorio actual: " `pwd`
 echo "Actualizando el servicio $SERVICE_NAME..."
 while read oldrev newrev ref
 do
-    if [[ $ref =~ ".*/$DEPLOYMENT_BRANCH$" ]];
+    if [[ $ref =~ .*/"$DEPLOYMENT_BRANCH"$ ]];
     then
         echo "Referencia $DEPLOYMENT_BRANCH recibido.  Desplegando rama $DEPLOYMENT_BRANCH..."
         echo "Ref: $ref"

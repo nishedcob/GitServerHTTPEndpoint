@@ -17,7 +17,6 @@ GIT="/usr/bin/git"
 WORK_TREE="--work-tree=$BASE_PATH"
 GIT_DIR="--git-dir=$GIT_DIR_PATH"
 UPDATE_INFO="$WORK_TREE $GIT_DIR update-server-info"
-#GIT_DIR="" # No es necesario utilizar eso con repositorios completos, solo en el caso de repositorios bare
 
 $GIT $UPDATE_INFO
 echo "Directorio actual: " `pwd`
@@ -34,3 +33,4 @@ do
     fi
 done
 echo "Servicio $SERVICE_NAME actualizado..."
+
